@@ -23,15 +23,16 @@
           msg: "Reboot required before updates can be installed."
           reboot_timeout: 1200
         when: update_result.reboot_required or ansible_reboot_pending
-
-# - name: Running Windows Update
- #     win_updates:
-  #      category_names: ['SecurityUpdates','CriticalUpdates','UpdateRollups', 'Updates', 'DefinitionUpdates']
-   #   register: result
-
-    # output results
-    #- debug: var=result
-    
-    # reboot only if required
-   # - win_reboot:
-    #  when: result.reboot_required
+        
+- name: Install all critical and security updates
+  win_updates:
+    category_names:
+    - CriticalUpdates
+    - SecurityUpdates
+    - UpdateRollups
+    state: installed
+  register: update_result
+ 
+        - name: reboot host if required
+          win_reboot:
+          when: update_result.reboot_required
