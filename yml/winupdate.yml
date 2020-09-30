@@ -1,6 +1,9 @@
 ---
 - name:  Windows Update
   hosts: all
+  vars:
+    windows_reboot_allowed: false
+    windows_pending_reboot_fail: true
   gather_facts: false
   tasks:
     - name: Running Windows Update
