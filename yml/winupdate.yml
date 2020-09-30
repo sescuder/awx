@@ -3,7 +3,7 @@
 # Apply windows updates
 
 - name: Apply windows updates
-  hosts: windows_systems
+  hosts: all
   gather_facts: yes
   vars:
     initial_reboot: |-
