@@ -1,8 +1,21 @@
 ---
-- name: Check to see if the system needs a reboot
-hosts: all
-  assert:
-    that:
-      - ansible_reboot_pending == false
-    fail_msg: "{{ ansible_hostname }} needs a reboot"
-    success_msg: "{{ ansible_hostname }} does not need a reboot"
+  - hosts: all
+    gather_facts: yes
+    tasks:
+      - name: check if reboot is required
+        win_updates:
+          category_names:
+            - SecurityUpdates
+            - CriticalUpdates
+            - DefinitionUpdates
+            - UpdateRollups
+            - Updates
+            - ServicePacks
+        register: update_result
+        check_mode: yes
+
+      - name: pre-update reboot
+        win_reboot:
+          msg: "Reboot required before updates can be installed."
+          reboot_timeout: 1200
+        when: update_result.reboot_required or ansible_reboot_pending
